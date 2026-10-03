@@ -10,7 +10,7 @@ services:
       - /path/to/baseq3:/mnt/paks:ro
       - ./server.cfg:/config/server.cfg:ro
     healthcheck:
-      test: ["CMD-SHELL", "printf '\\xff\\xff\\xff\\xffgetinfo\\n' | nc -u -w 2 127.0.0.1 27960 | grep -q infoResponse"]
+      test: ["CMD-SHELL", "printf '\\377\\377\\377\\377getinfo\\n' | nc -u -w 2 127.0.0.1 27960 | grep -q infoResponse"]
       interval: 30s
       timeout: 10s
       retries: 3
