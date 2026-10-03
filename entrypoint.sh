@@ -7,7 +7,11 @@ for pak in /mnt/paks/*.pk3; do
     ln -sf "$pak" "/q3/baseq3/$(basename "$pak")"
 done
 
-cp /q3/server.cfg /q3/home/baseq3/server.cfg
+if [ -f /config/server.cfg ]; then
+    cp /config/server.cfg /q3/home/baseq3/server.cfg
+else
+    cp /q3/server.cfg /q3/home/baseq3/server.cfg
+fi
 
 exec /q3/quake3e.ded.x64 \
     +set dedicated 1 \
