@@ -4,10 +4,12 @@ services:
     environment:
       RCON_PASSWORD: changeme
       TZ: Europe/Moscow
+      # FS_GAME: cpma  # run a mod (see "Mods" in README)
     ports:
       - "27960:27960/udp"
     volumes:
       - /path/to/baseq3:/mnt/paks:ro
+      # - /path/to/cpma:/mnt/mod:ro  # mod files, requires FS_GAME
       - ./server.cfg:/config/server.cfg:ro
     healthcheck:
       test: ["CMD-SHELL", "printf '\\377\\377\\377\\377getinfo\\n' | nc -u -w 2 127.0.0.1 27960 | grep -q infoResponse"]
@@ -15,4 +17,4 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
-    restart: unless-stopped
+

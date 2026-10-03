@@ -31,4 +31,5 @@ jobs:
           push: true
           tags: |
             ghcr.io/kbnchk/quake3e:2b375bd
+            ghcr.io/kbnchk/quake3e:2b375bd-cpma1
             ghcr.io/kbnchk/quake3e:latest
