@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - Dockerfile
+      - entrypoint.sh
+      - server.cfg
+      - QUAKE3E_REF
+      - .github/workflows/image.yml
   workflow_dispatch:
 
 permissions:
