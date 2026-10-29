@@ -17,6 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Read engine ref
+        id: ref
+        run: echo "ref=$(tr -d "[:space:]" < QUAKE3E_REF)" >> "$GITHUB_OUTPUT"
+
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -30,6 +34,12 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/kbnchk/quake3e:2b375bd
-            ghcr.io/kbnchk/quake3e:2b375bd-cpma1
+            ghcr.io/kbnchk/quake3e:${{ steps.ref.outputs.ref }}
             ghcr.io/kbnchk/quake3e:latest
+
+      - name: Keep only the 2 newest image versions
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: quake3e
+          package-type: container
+          min-versions-to-keep: 2

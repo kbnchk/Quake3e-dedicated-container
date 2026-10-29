@@ -4,8 +4,10 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+COPY QUAKE3E_REF /QUAKE3E_REF
+
 RUN git clone https://github.com/ec-/Quake3e /src \
-    && git -C /src checkout 2b375bd1e29a
+    && git -C /src checkout "$(cat /QUAKE3E_REF)"
 
 WORKDIR /src
 

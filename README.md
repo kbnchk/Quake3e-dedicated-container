@@ -1,6 +1,6 @@
 # Quake3e dedicated server container
 
-Container image with the [Quake3e](https://github.com/ec-/Quake3e) dedicated server engine (pinned commit `2b375bd1e29a`), built in a multi-stage Debian image. The server runs in LAN dedicated mode on UDP port 27960.
+Container image with the [Quake3e](https://github.com/ec-/Quake3e) dedicated server engine (upstream release tag pinned in `QUAKE3E_REF`, bumped by a weekly PR), built in a multi-stage Debian image. The server runs in LAN dedicated mode on UDP port 27960.
 
 No game data is included. You must own Quake III Arena and mount your own `baseq3` pak files (retail `pak0.pk3` + 1.32 point release pk3s).
 
