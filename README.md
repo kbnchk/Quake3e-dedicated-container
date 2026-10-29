@@ -1,4 +1,4 @@
-# Quake3e dedicated server container
+# Quake3e dedicated server image and helm-chart
 
 Container image with the [Quake3e](https://github.com/ec-/Quake3e) dedicated server engine (upstream release tag pinned in `QUAKE3E_REF`, bumped by a weekly PR), built in a multi-stage Debian image. The server runs in LAN dedicated mode on UDP port 27960.
 
