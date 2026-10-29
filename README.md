@@ -44,3 +44,9 @@ The mounted `server.cfg` is placed into the mod's home directory, so it is exec'
 ## Health
 
 The container healthcheck sends a UDP `getinfo` query to port 27960 and expects an `infoResponse`.
+
+## Image tags and versioning
+
+- The engine version is the upstream release tag in `QUAKE3E_REF` (e.g. `2026-10-14`). A weekly workflow opens a PR when a newer release appears; merging it to `main` rebuilds the image.
+- Published to `ghcr.io/kbnchk/quake3e` as `:<release tag>` and `:latest`. Only the 2 newest image versions are kept in the registry; older ones are deleted automatically.
+- Local build: `docker build -t quake3e .` (uses the ref from `QUAKE3E_REF`).
