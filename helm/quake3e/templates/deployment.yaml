@@ -1,0 +1,123 @@
+{{- $cfgSecret := .Values.serverCfg.existingSecret -}}
+{{- $cfgInline := .Values.serverCfg.inline -}}
+{{- $fs := .Values.fsGame -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "quake3e.fullname" . }}
+  labels:
+    {{- include "quake3e.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  # hostPort on a single node: RollingUpdate hangs in Pending
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "quake3e.selector" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "quake3e.selector" . | nindent 8 }}
+    spec:
+      containers:
+        - name: quake3e
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: {{ .Values.timezone | quote }}
+            - name: FS_GAME
+              value: {{ $fs | quote }}
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "quake3e.rconSecret" . }}
+                  key: RCON_PASSWORD
+          ports:
+            - name: game
+              containerPort: {{ .Values.network.port }}
+              protocol: UDP
+              {{- if .Values.network.hostPort }}
+              hostPort: {{ .Values.network.port }}
+              {{- with .Values.network.hostIP }}
+              hostIP: {{ . }}
+              {{- end }}
+              {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: paks
+              mountPath: /mnt/paks
+              readOnly: true
+            {{- if .Values.mod.hostPath }}
+            - name: mod
+              mountPath: /mnt/mod
+              readOnly: true
+            {{- end }}
+            {{- if or $cfgSecret $cfgInline }}
+            - name: server-cfg
+              mountPath: /config/server.cfg
+              subPath: server.cfg
+              readOnly: true
+            {{- end }}
+            {{- range $name, $_ := .Values.maps }}
+            - name: maps
+              mountPath: /q3/home/{{ $fs }}/cfg-maps/{{ $name }}
+              subPath: {{ $name }}
+              readOnly: true
+            {{- end }}
+          startupProbe:
+            exec: &getinfo
+              command:
+                - sh
+                - -c
+                - "printf '\\377\\377\\377\\377getinfo\\n' | nc -u -w 2 127.0.0.1 {{ .Values.network.port }} | grep -q infoResponse"
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            exec: *getinfo
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec: *getinfo
+            periodSeconds: 30
+            timeoutSeconds: 10
+      volumes:
+        - name: paks
+          hostPath:
+            path: {{ .Values.paks.hostPath }}
+            type: Directory
+        {{- if .Values.mod.hostPath }}
+        - name: mod
+          hostPath:
+            path: {{ .Values.mod.hostPath }}
+            type: Directory
+        {{- end }}
+        {{- if $cfgSecret }}
+        - name: server-cfg
+          secret:
+            secretName: {{ $cfgSecret }}
+            items:
+              - key: server.cfg
+                path: server.cfg
+        {{- else if $cfgInline }}
+        - name: server-cfg
+          configMap:
+            name: {{ include "quake3e.fullname" . }}-cfg
+        {{- end }}
+        {{- if .Values.maps }}
+        - name: maps
+          configMap:
+            name: {{ include "quake3e.fullname" . }}-maps
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

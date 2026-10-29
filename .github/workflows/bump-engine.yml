@@ -23,6 +23,7 @@ jobs:
             | sed 's#.*refs/tags/##' | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' | sort | tail -1)
           [ -n "$tag" ] || exit 1
           echo "$tag" > QUAKE3E_REF
+          sed -i "s/^appVersion:.*/appVersion: \"$tag\"/" helm/quake3e/Chart.yaml
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
       - name: Open PR

@@ -50,3 +50,14 @@ The container healthcheck sends a UDP `getinfo` query to port 27960 and expects 
 - The engine version is the upstream release tag in `QUAKE3E_REF` (e.g. `2026-10-14`). A weekly workflow opens a PR when a newer release appears; merging it to `main` rebuilds the image.
 - Published to `ghcr.io/kbnchk/quake3e` as `:<release tag>` and `:latest`. Only the 2 newest image versions are kept in the registry; older ones are deleted automatically.
 - Local build: `docker build -t quake3e .` (uses the ref from `QUAKE3E_REF`).
+
+## Helm chart
+
+The chart lives in [helm/quake3e](helm/quake3e) and is published as an OCI artifact on every change under `helm/`:
+
+```
+helm install quake3e oci://ghcr.io/kbnchk/charts/quake3e --version 0.1.0 \
+  --set rcon.password=... --set paks.hostPath=/opt/quake3/baseq3
+```
+
+The image tag defaults to the chart `appVersion` (kept in sync with `QUAKE3E_REF` by the weekly bump PR). Bump the chart `version` in `Chart.yaml` manually when the chart itself changes. See `helm/quake3e/values.yaml` for options.

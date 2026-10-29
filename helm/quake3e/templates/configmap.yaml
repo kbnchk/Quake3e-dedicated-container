@@ -1,0 +1,25 @@
+{{- if .Values.serverCfg.inline }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quake3e.fullname" . }}-cfg
+  labels:
+    {{- include "quake3e.labels" . | nindent 4 }}
+data:
+  server.cfg: |
+    {{- .Values.serverCfg.inline | nindent 4 }}
+{{- end }}
+---
+{{- if .Values.maps }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quake3e.fullname" . }}-maps
+  labels:
+    {{- include "quake3e.labels" . | nindent 4 }}
+data:
+  {{- range $name, $content := .Values.maps }}
+  {{ $name }}: |
+    {{- $content | nindent 4 }}
+  {{- end }}
+{{- end }}

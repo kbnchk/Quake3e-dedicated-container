@@ -1,0 +1,49 @@
+image:
+  repository: ghcr.io/kbnchk/quake3e
+  # defaults to Chart appVersion
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Mod directory name (fs_game). "baseq3" = no mod.
+fsGame: baseq3
+timezone: Europe/Moscow
+
+rcon:
+  # Existing Secret with key RCON_PASSWORD (preferred). If empty, a Secret is
+  # created from `password`.
+  existingSecret: ""
+  password: ""
+
+# server.cfg override. Empty = default config baked into the image.
+serverCfg:
+  # Existing Secret with key server.cfg
+  existingSecret: ""
+  # Or inline content (stored in a ConfigMap)
+  inline: ""
+
+# Extra files mounted into /q3/home/<fsGame>/cfg-maps/ (name: content)
+maps: {}
+
+# Game data comes from the node (read-only hostPath)
+paks:
+  hostPath: /opt/quake3/baseq3
+mod:
+  # Empty = no mod mounted. Requires fsGame != baseq3.
+  hostPath: ""
+
+network:
+  port: 27960
+  # Bind hostPort on the node. hostIP empty = all addresses.
+  hostPort: true
+  hostIP: ""
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: "0.5"
+    memory: 256Mi
+
+nodeSelector: {}
+tolerations: []

@@ -1,0 +1,29 @@
+name: chart
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - helm/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Lint, package, push
+        run: |
+          helm lint helm/quake3e
+          helm package helm/quake3e -d /tmp/chart
+          helm push /tmp/chart/quake3e-*.tgz oci://ghcr.io/kbnchk/charts

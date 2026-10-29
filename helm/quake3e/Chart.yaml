@@ -1,0 +1,6 @@
+apiVersion: v2
+name: quake3e
+description: Quake3e dedicated server
+type: application
+version: 0.1.0
+appVersion: "2026-10-14"
